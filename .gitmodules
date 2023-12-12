@@ -1,0 +1,3 @@
+[submodule "Submodules/Atlus-Script-Tools"]
+	path = Submodules/Atlus-Script-Tools
+	url = https://github.com/AnimatedSwine37/Atlus-Script-Tools

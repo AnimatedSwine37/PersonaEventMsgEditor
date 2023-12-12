@@ -1,9 +1,14 @@
-﻿using Avalonia;
+﻿using AtlusScriptLibrary.Common.Libraries;
+using AtlusScriptLibrary.Common.Text.Encodings;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-
+using Microsoft.Extensions.DependencyInjection;
+using PersonaEventMsgEditor.Services;
 using PersonaEventMsgEditor.ViewModels;
 using PersonaEventMsgEditor.Views;
+using System;
+using System.Text;
 
 namespace PersonaEventMsgEditor;
 
@@ -22,15 +27,27 @@ public partial class App : Application
             {
                 DataContext = new MainViewModel()
             };
+
+            var services = new ServiceCollection();
+
+            services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
+
+            Services = services.BuildServiceProvider();
+
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
-            };
-        }
+
+        // Setup script compiler stuff
+        LibraryLookup.SetLibraryPath($"{AppDomain.CurrentDomain.BaseDirectory}\\Libraries");
+        AtlusEncoding.SetCharsetDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\Charsets");
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // Needed for shift_jis encoding to be available
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    public new static App? Current => Application.Current as App;
+
+    /// <summary>
+    /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
+    /// </summary>
+    public IServiceProvider? Services { get; private set; }
 }

@@ -8,5 +8,5 @@
         x:Class="PersonaEventMsgEditor.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="PersonaEventMsgEditor">
-        <views:MainView />
+	<views:MainView />
 </Window>
