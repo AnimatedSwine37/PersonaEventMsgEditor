@@ -1,3 +1,9 @@
 [submodule "Submodules/Atlus-Script-Tools"]
 	path = Submodules/Atlus-Script-Tools
 	url = https://github.com/AnimatedSwine37/Atlus-Script-Tools
+[submodule "Submodules\\AtlusFileSystemLibrary"]
+	path = Submodules\\AtlusFileSystemLibrary
+	url = https://github.com/tge-was-taken/AtlusFileSystemLibrary
+[submodule "Submodules\\Amicitia"]
+	path = Submodules\\Amicitia
+	url = https://github.com/tge-was-taken/Amicitia
