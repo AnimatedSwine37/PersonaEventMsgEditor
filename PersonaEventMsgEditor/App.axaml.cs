@@ -31,6 +31,7 @@ public partial class App : Application
             var services = new ServiceCollection();
 
             services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
+            services.AddSingleton<ICvmService>(x => new CvmService());
 
             Services = services.BuildServiceProvider();
 

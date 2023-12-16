@@ -5,10 +5,12 @@
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PersonaEventMsgEditor.Views.PreviewView"
-             x:DataType="vm:PreviewViewModel">
+			 x:DataType="vm:PreviewViewModel">
 
 	<StackPanel>
-	<Label Content="{Binding Message.Text}"/>
+		<TextBlock Text="{Binding Text}" DockPanel.Dock="Bottom"/>
+		<Image Width="200" Stretch="Uniform"
+			   Source="{Binding Bustup}"/>
 	</StackPanel>
-
+	
 </UserControl>

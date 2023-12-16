@@ -9,12 +9,12 @@ using System.Reactive;
 using Avalonia.Platform.Storage;
 using System.Collections.Generic;
 using PersonaEventMsgEditor.Models.Files;
+using System.Reactive.Concurrency;
 
 namespace PersonaEventMsgEditor.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
-    public Cvm DataCvm { get; private set; }
     public ReactiveCommand<Unit, Unit> OpenFromDiskCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenFromGameCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveEventCommand { get; }
@@ -28,13 +28,11 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        // TODO store the path to the iso in a config or something
-        DataCvm = Cvm.FromIso(@"E:\Modding\P3F\CEP\Files\iso\P3F.iso", "DATA.CVM");
         OpenFromDiskCommand = ReactiveCommand.Create(OpenFromDisk);
         OpenFromGameCommand = ReactiveCommand.Create(OpenFromGame);
 
         var canSaveObservable = this.WhenAnyValue(x => x.Editor, x => x.Editor, (x, y) => x != null);
-        SaveEventCommand = ReactiveCommand.Create(() => _editor.SaveEvent(), canSaveObservable);
+        SaveEventCommand = ReactiveCommand.Create(() => _editor!.SaveEvent(), canSaveObservable);
     }
 
     private async void OpenFromDisk()

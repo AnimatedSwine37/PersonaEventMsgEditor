@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+	<Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
@@ -23,13 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Submodules\Amicitia\Source\AmicitiaLibrary\AmicitiaLibrary.csproj" />
     <ProjectReference Include="..\Submodules\Atlus-Script-Tools\Source\AtlusScriptLibrary\AtlusScriptLibrary.csproj" />
+    <ProjectReference Include="..\Submodules\AtlusFileSystemLibrary\Source\AtlusFileSystemLibrary\AtlusFileSystemLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\PreviewView.axaml.cs">
-      <DependentUpon>PreviewView.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\MainView.axaml.cs">
       <DependentUpon>MainView.axaml</DependentUpon>
     </Compile>

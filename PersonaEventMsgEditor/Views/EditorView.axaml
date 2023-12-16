@@ -8,12 +8,20 @@
              x:Class="PersonaEventMsgEditor.Views.EditorView"
 			 x:DataType="vm:EditorViewModel">
 
-	<Grid>
-		<views:PreviewView Grid.Row="0" Grid.Column="0" DataContext="{Binding Preview}"/>
-		<Border Background="Gray" CornerRadius="20" Margin="40">
-			<StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+	<UniformGrid>
+		
+		<!--Preview Window-->
+		<DockPanel Grid.Column="0">
+			<views:PreviewView DataContext="{Binding Previews[0]}"/>
+		</DockPanel>
+
+
+		<!--Meessage Editor-->
+		<Border Background="Gray" CornerRadius="20" Margin="40"
+				 Grid.Column="1">
+			<StackPanel>
 				<Label Content="{Binding Name}" FontWeight="Bold" FontSize="18" Margin="20 0 0 0"/>
-				<ListBox ItemsSource="{Binding Dialogs}" SelectedItem="{Binding SelectedDialog}">
+				<ListBox ItemsSource="{Binding Dialogs}" SelectedIndex="{Binding SelectedDialog}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<views:DialogEditorView Margin="20 0 20 0"/>
@@ -22,6 +30,6 @@
 				</ListBox>
 			</StackPanel>
 		</Border>
-	</Grid>
+	</UniformGrid>
 
 </UserControl>
