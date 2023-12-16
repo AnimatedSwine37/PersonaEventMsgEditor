@@ -1,5 +1,7 @@
-﻿using DiscUtils.Streams;
+﻿using Avalonia.Platform.Storage;
+using DiscUtils.Streams;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace PersonaEventMsgEditor.Models.Files;
 
@@ -15,12 +17,15 @@ public class PMD
 
     private int _typeTableCount;
     private int _msgAddress;
+    private int _msgIndex;
 
-    private PMD(Stream file,  int typeTableCount, SubStream msgStream)
+    private PMD(Stream file, int typeTableCount, SubStream msgStream, int msgAddress, int msgIndex)
     {
         _file = file;
         _typeTableCount = typeTableCount;
         _msgStream = msgStream;
+        _msgAddress = msgAddress;
+        _msgIndex = msgIndex;
     }
 
     /// <summary>
@@ -35,19 +40,19 @@ public class PMD
         int typeTableCount = reader.ReadInt32();
         stream.Position = 0x14;
 
-        for(int i = 0; i < typeTableCount; i++)
+        for (int i = 0; i < typeTableCount; i++)
         {
             stream.Position += 0xC;
             if (reader.ReadInt32() != 6) continue;
             // We found the message type table
             var itemSize = reader.ReadInt32();
             var itemCount = reader.ReadInt32(); // Really assuming this is 1, stuff will probably break if more...
-            if(itemCount > 1)
+            if (itemCount > 1)
             {
                 throw new InvalidDataException("Attempted to load PMD with multiple messages.\nThese are currently unsupported, please report this.");
             }
             var itemAddress = reader.ReadInt32();
-            return new PMD(stream, typeTableCount, new SubStream(stream, itemAddress, itemSize*itemCount));
+            return new PMD(stream, typeTableCount, new SubStream(stream, itemAddress, itemSize * itemCount), itemAddress, i);
         }
 
         // Didn't find the message, the pmd is useless in that case so return null
@@ -61,23 +66,27 @@ public class PMD
     /// This writes to the stream this PMD was created from so if it was a file stream, the file on disk will be altered
     /// </remarks>
     /// <param name="message">A stream containing the new bmd file to inject</param>
-    public async void InjectMessage(Stream message)
+    public async Task InjectMessage(Stream message)
     {
         // Get change in file length
         var reader = new BinaryReader(_file);
         _file.Position = 4;
         var fileSize = reader.ReadInt32();
-        var msgLengthDiff = message.Length - _msgStream.Length;
+        int msgLengthDiff = (int)(message.Length - _msgStream.Length);
 
         // Change file length
-        _file.SetLength(fileSize + msgLengthDiff );
+        _file.SetLength(fileSize + msgLengthDiff);
         _file.Position = 4;
         var writer = new BinaryWriter(_file);
         writer.Write(fileSize + msgLengthDiff);
 
+        // Change the message length (note this assumes only one message item)
+        _file.Position = 0x24 + _msgIndex * 0x10;
+        writer.Write((int)message.Length);
+
         // Change the address of all entries to their new position
         _file.Position = 0x20;
-        for(int i = 0; i < _typeTableCount; i++)
+        for (int i = 0; i < _typeTableCount; i++)
         {
             _file.Position += 0xC;
             var address = reader.ReadInt32();
@@ -89,15 +98,34 @@ public class PMD
 
         // Copy all of the data after the message
         var msgEnd = _msgAddress + _msgStream.Length;
-        var movedData = new MemoryStream(new byte[fileSize - msgEnd]);
-        _file.Position = msgEnd;
-        await _file.CopyToAsync(movedData, (int)movedData.Length);
+        MemoryStream? movedData = null;
+        if (fileSize - msgEnd > 0)
+        {
+            movedData = new MemoryStream(new byte[fileSize - msgEnd]);
+            _file.Position = msgEnd;
+            await _file.CopyToAsync(movedData, (int)movedData.Length);
+        }
 
         // Write out the new message data
-        await _msgStream.CopyToAsync(_file, (int)_msgStream.Length);
+        _file.Position = _msgAddress;
+        message.Position = 0;
+        await message.CopyToAsync(_file, (int)_msgStream.Length);
 
         // Write the old data after it
-        await movedData.CopyToAsync(_file);
+        if(movedData != null)
+        {
+            await movedData.CopyToAsync(_file);
+        }
+    }
+
+    /// <summary>
+    /// Writes the full PMD to a stream
+    /// </summary>
+    public async Task ToFile(IStorageFile file)
+    {
+        using var stream = await file.OpenWriteAsync();
+        _file.Position = 0;
+        await _file.CopyToAsync(stream);
     }
 }
 

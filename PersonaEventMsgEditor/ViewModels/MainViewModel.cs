@@ -17,7 +17,14 @@ public class MainViewModel : ViewModelBase
     public Cvm DataCvm { get; private set; }
     public ReactiveCommand<Unit, Unit> OpenFromDiskCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenFromGameCommand { get; }
-    public EditorViewModel Editor { get; } = new();
+    public ReactiveCommand<Unit, Unit> SaveEventCommand { get; }
+
+    private EditorViewModel? _editor;
+    public EditorViewModel? Editor
+    {
+        get => _editor;
+        set => this.RaiseAndSetIfChanged(ref _editor, value);
+    }
 
     public MainViewModel()
     {
@@ -25,6 +32,9 @@ public class MainViewModel : ViewModelBase
         DataCvm = Cvm.FromIso(@"E:\Modding\P3F\CEP\Files\iso\P3F.iso", "DATA.CVM");
         OpenFromDiskCommand = ReactiveCommand.Create(OpenFromDisk);
         OpenFromGameCommand = ReactiveCommand.Create(OpenFromGame);
+
+        var canSaveObservable = this.WhenAnyValue(x => x.Editor, x => x.Editor, (x, y) => x != null);
+        SaveEventCommand = ReactiveCommand.Create(() => _editor.SaveEvent(), canSaveObservable);
     }
 
     private async void OpenFromDisk()
@@ -35,7 +45,8 @@ public class MainViewModel : ViewModelBase
         var file = await filesService.OpenFileAsync("Select an event", new[] { Event.EventFile });
         if (file is null) return;
 
-        Editor.Event = await Event.FromFileAsync(file);
+        var @event = await Event.FromFileAsync(file);
+        Editor = new EditorViewModel(@event);
     }
 
     private void OpenFromGame()

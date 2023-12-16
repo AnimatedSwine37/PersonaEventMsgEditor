@@ -4,11 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="PersonaEventMsgEditor.Views.PreviewView"
-             x:DataType="vm:PreviewViewModel">
+             x:Class="PersonaEventMsgEditor.Views.DialogEditorView"
+			 x:DataType="vm:DialogEditorViewModel">
 
 	<StackPanel>
-	<Label Content="{Binding Message.Text}"/>
+		<TextBox Text="{Binding Message.Text}"/>
 	</StackPanel>
-
 </UserControl>

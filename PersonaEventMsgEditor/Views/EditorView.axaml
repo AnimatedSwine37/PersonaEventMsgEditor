@@ -10,6 +10,18 @@
 
 	<Grid>
 		<views:PreviewView Grid.Row="0" Grid.Column="0" DataContext="{Binding Preview}"/>
+		<Border Background="Gray" CornerRadius="20" Margin="40">
+			<StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+				<Label Content="{Binding Name}" FontWeight="Bold" FontSize="18" Margin="20 0 0 0"/>
+				<ListBox ItemsSource="{Binding Dialogs}" SelectedItem="{Binding SelectedDialog}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<views:DialogEditorView Margin="20 0 20 0"/>
+						</DataTemplate>
+					</ListBox.ItemTemplate>	
+				</ListBox>
+			</StackPanel>
+		</Border>
 	</Grid>
-	
+
 </UserControl>

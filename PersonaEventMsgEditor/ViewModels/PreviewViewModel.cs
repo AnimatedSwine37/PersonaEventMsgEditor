@@ -3,16 +3,22 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PersonaEventMsgEditor.ViewModels;
 public class PreviewViewModel : ViewModelBase
 {
-    private Event? _event;
-    public Event? Event
+    private EventMessage? _eventMsg;
+    public EventMessage? Message
     {
-        get => _event;
-        set => this.RaiseAndSetIfChanged(ref _event, value);
+        get => _eventMsg;
+        set => this.RaiseAndSetIfChanged(ref _eventMsg, value);
     }
+
+    public PreviewViewModel()
+    {
+    }
+
 }

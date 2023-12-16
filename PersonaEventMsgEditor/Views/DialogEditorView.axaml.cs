@@ -1,11 +1,9 @@
-﻿using Avalonia;
 using Avalonia.Controls;
 
 namespace PersonaEventMsgEditor.Views;
-
-public partial class MainWindow : Window
+public partial class DialogEditorView : UserControl
 {
-    public MainWindow()
+    public DialogEditorView()
     {
         InitializeComponent();
     }

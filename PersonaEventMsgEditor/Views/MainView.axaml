@@ -21,6 +21,7 @@
 					<MenuItem Header="From Game" Command="{Binding OpenFromGameCommand}"/>
 					<MenuItem Header="From Disk" Command="{Binding OpenFromDiskCommand}"/>
 				</MenuItem>
+				<MenuItem Header="_Save" Command="{Binding SaveEventCommand}"/>
 			</MenuItem>
 		</Menu>
 
