@@ -117,6 +117,7 @@ public class PMD
         // Write the old data after it
         if(movedData != null)
         {
+            movedData.Position = 0;
             await movedData.CopyToAsync(_file);
         }
 
