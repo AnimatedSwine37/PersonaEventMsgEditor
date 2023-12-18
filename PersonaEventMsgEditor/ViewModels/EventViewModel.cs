@@ -52,7 +52,8 @@ public class EventViewModel : ViewModelBase
     {
         foreach (var message in Messages.ToList())
         {
-            await message.LoadBustupAsync();
+            // TODO add this back when I've actually got them loading asynchronously in some way
+            //await message.LoadBustupAsync();
         }
     }
 

@@ -8,6 +8,16 @@
 			 x:DataType="vm:EventMessageViewModel">
 
 	<StackPanel>
+		<StackPanel Orientation="Horizontal">
+			<TextBlock>Character</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Characters}" SelectedItem="{Binding Bustup.Character}"/>
+
+			<TextBlock>Outfit</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Outfits}" SelectedItem="{Binding Bustup.Outfit}"/>
+
+			<TextBlock>Emotion</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Emotions}" SelectedItem="{Binding Bustup.Emotion}"/>
+		</StackPanel>
 		<TextBox Text="{Binding Text}"/>
 	</StackPanel>
 </UserControl>

@@ -10,7 +10,7 @@
 	<StackPanel>
 		<TextBlock Text="{Binding Text}" DockPanel.Dock="Bottom"/>
 		<Image Width="200" Stretch="Uniform"
-			   Source="{Binding Bustup}"/>
+			   Source="{Binding Bustup.Image}"/>
 	</StackPanel>
 	
 </UserControl>
