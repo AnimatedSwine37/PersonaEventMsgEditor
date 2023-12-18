@@ -18,7 +18,7 @@ public class CvmService : ICvmService
         LoadFromIso(@"E:\Modding\P3F\CEP\Files\iso\P3F.iso", "DATA.CVM");
     }
 
-    public async Task LoadFromIso(string isoPath, string cvmPath)
+    public void LoadFromIso(string isoPath, string cvmPath)
     {
         FileStream isoStream = File.Open(isoPath, FileMode.Open);
         CDReader cd = new CDReader(isoStream, true);

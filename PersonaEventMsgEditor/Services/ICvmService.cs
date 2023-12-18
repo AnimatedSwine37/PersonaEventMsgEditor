@@ -17,7 +17,7 @@ public interface ICvmService
     /// <remarks>
     /// When getting files from the <see cref="ICvmService"/> they will be loaded from the CVM loaded by this
     /// </remarks>
-    public Task LoadFromIso(string isoPath, string cvmPath);
+    public void LoadFromIso(string isoPath, string cvmPath);
 
     /// <summary>
     /// Recursively gets all files from the cvm that match a pattern
