@@ -1,26 +1,31 @@
-﻿using AtlusScriptLibrary.Common.Text.Encodings;
+﻿using Avalonia.Platform.Storage;
+using PersonaEventMsgEditor.Models.Files;
+using PersonaEventMsgEditor.Models;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using AtlusScriptLibrary.MessageScriptLanguage;
 using AtlusScriptLibrary.MessageScriptLanguage.Compiler;
-using Avalonia.Platform.Storage;
-using PersonaEventMsgEditor.Models.Files;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using AtlusScriptLibrary.Common.Text.Encodings;
+using ReactiveUI;
+using System.Reactive.Concurrency;
+using System.Linq;
 
-namespace PersonaEventMsgEditor.Models;
-public class Event
+namespace PersonaEventMsgEditor.ViewModels;
+public class EventViewModel : ViewModelBase
 {
     public string Path => _file.Path.AbsolutePath;
+    public string Name => _file.Name;
     public int MajorId { get; }
     public int MinorId { get; }
-    public List<EventMessage> Messages { get; set; }
+    public ObservableCollection<EventMessageViewModel> Messages { get; } = new();
     private MessageScript _messageScript { get; set; }
     private PMD _pmd;
     private IStorageFile _file;
 
-    public Event(IStorageFile file, int majorId, int minorId, MessageScript messageScript, PMD pmd)
+    public EventViewModel(IStorageFile file, int majorId, int minorId, MessageScript messageScript, PMD pmd)
     {
         _file = file;
         MajorId = majorId;
@@ -28,27 +33,36 @@ public class Event
         _messageScript = messageScript;
         _pmd = pmd;
 
-        Messages = new();
-        foreach(var dialog in messageScript.Dialogs)
+        foreach (var dialog in messageScript.Dialogs)
         {
-            if(dialog.Kind == DialogKind.Message)
+            if (dialog.Kind == DialogKind.Message)
             {
-                Messages.Add(new EventMessage((MessageDialog)dialog));
+                Messages.Add(new EventMessageViewModel((MessageDialog)dialog));
             }
             else
             {
                 // TODO make it work with selections as well
             }
         }
+
+        RxApp.MainThreadScheduler.Schedule(LoadBustups);
     }
 
-    public static async Task<Event> FromFileAsync(IStorageFile file)
+    private async void LoadBustups()
+    {
+        foreach (var message in Messages.ToList())
+        {
+            await message.LoadBustupAsync();
+        }
+    }
+
+    public static async Task<EventViewModel> FromFileAsync(IStorageFile file)
     {
         int major = 0;
         int minor = 0;
 
         var match = Regex.Match(file.Name, @"E(\d+)_(\d+)\.PM1", RegexOptions.IgnoreCase);
-        if(match.Success)
+        if (match.Success)
         {
             major = int.Parse(match.Groups[1].Value);
             minor = int.Parse(match.Groups[2].Value);
@@ -61,7 +75,7 @@ public class Event
         var pmd = PMD.FromStream(eventStream);
         var messageScript = MessageScript.FromStream(pmd.Message, FormatVersion.Version1, AtlusEncoding.Persona3, true);
 
-        return new Event(file, major, minor, messageScript, pmd);
+        return new EventViewModel(file, major, minor, messageScript, pmd);
     }
 
     public static FilePickerFileType EventFile { get; } = new("Atlus Event File")
@@ -86,5 +100,4 @@ public class Event
         await _pmd.InjectMessage(newMessageScript);
         await _pmd.ToFile(_file);
     }
-
 }

@@ -1,51 +1,74 @@
 ﻿using AmicitiaLibrary.Graphics.TMX;
 using AtlusFileSystemLibrary.FileSystems.PAK;
-using AtlusScriptLibrary.Common.Text.Encodings;
 using AtlusScriptLibrary.MessageScriptLanguage;
-using AtlusScriptLibrary.MessageScriptLanguage.Compiler;
 using AtlusScriptLibrary.MessageScriptLanguage.Decompiler;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using PersonaEventMsgEditor.Services;
 using ReactiveUI;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PersonaEventMsgEditor.Models;
-
-/// <summary>
-/// Represents an individual message in an event
-/// </summary>
-public class EventMessage
+namespace PersonaEventMsgEditor.ViewModels;
+public class EventMessageViewModel : ViewModelBase
 {
-    public string Name { get; set; }
-    public string Text { get; set; }
-    public string Speaker { get; set; }
-    public string Voice { get; set; }
+    private string _name;
+    public string Name
+    {
+        get => _name;
+        set => this.RaiseAndSetIfChanged(ref _name, value);
+    }
 
-    private MessageScriptDecompiler _decompiler;
+    private string _text;
+    public string Text
+    {
+        get => _text;
+        set => this.RaiseAndSetIfChanged(ref _text, value);
+    }
+
+    private string _speaker;
+    public string Speaker
+    {
+        get => _speaker;
+        set => this.RaiseAndSetIfChanged(ref _speaker, value);
+    }
+
+    private Bitmap? _bustup;
+    public Bitmap? Bustup
+    {
+        get => _bustup;
+        private set => this.RaiseAndSetIfChanged(ref _bustup, value);
+    }
+
+    // TODO actually have the sound file somehow instead of whatever this string is meant to be
+    private string _voice;
+    public string Voice
+    {
+        get => _voice;
+        set => this.RaiseAndSetIfChanged(ref _voice, value);
+    }
+
     private MessageDialog _dialog;
 
-    public EventMessage(MessageDialog dialog)
+    public EventMessageViewModel(MessageDialog dialog)
     {
         _dialog = dialog;
         Name = dialog.Name;
         Speaker = "To Implement";
 
         using var msgWriter = new StringWriter();
-        _decompiler = new MessageScriptDecompiler(msgWriter);
+        var decompiler = new MessageScriptDecompiler(msgWriter);
         // TODO change this so the text is just the actual text and other stuff like speaker and bustup are separate variables
         // (Need to decide how they'll be placed on the UI and whether Wxnder even wants that)
-        _decompiler.Decompile(dialog);
+        decompiler.Decompile(dialog);
         Text = msgWriter.ToString();
     }
 
-    public async Task<Stream?> LoadBustupAsync()
+    public async Task LoadBustupAsync()
     {
         // TODO probably don't make async like this...
-        return await Task.Run(() =>
+        var imageStream = await Task.Run(() =>
         {
             // TODO deal with multiple pages
             var page = _dialog.Pages[0];
@@ -95,5 +118,10 @@ public class EventMessage
             memory.Position = 0;
             return memory;
         });
+
+        if (imageStream != null)
+        {
+            Bustup = await Task.Run(() => Bitmap.DecodeToWidth(imageStream, 400));
+        }
     }
 }

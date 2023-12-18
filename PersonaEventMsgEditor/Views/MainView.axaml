@@ -25,6 +25,6 @@
 			</MenuItem>
 		</Menu>
 
-		<views:EditorView DataContext="{Binding Editor}"/>
+		<views:EditorView DataContext="{Binding Event}"/>
 	</DockPanel>
 </UserControl>

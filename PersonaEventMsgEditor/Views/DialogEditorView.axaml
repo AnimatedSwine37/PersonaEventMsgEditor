@@ -5,9 +5,9 @@
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PersonaEventMsgEditor.Views.DialogEditorView"
-			 x:DataType="vm:DialogEditorViewModel">
+			 x:DataType="vm:EventMessageViewModel">
 
 	<StackPanel>
-		<TextBox Text="{Binding Message.Text}"/>
+		<TextBox Text="{Binding Text}"/>
 	</StackPanel>
 </UserControl>

@@ -6,13 +6,13 @@
 			 xmlns:views="using:PersonaEventMsgEditor.Views"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PersonaEventMsgEditor.Views.EditorView"
-			 x:DataType="vm:EditorViewModel">
+			 x:DataType="vm:EventViewModel">
 
 	<UniformGrid>
 		
 		<!--Preview Window-->
 		<DockPanel Grid.Column="0">
-			<views:PreviewView DataContext="{Binding Previews[0]}"/>
+			<views:PreviewView DataContext="{Binding Messages[0]}"/>
 		</DockPanel>
 
 
@@ -21,13 +21,13 @@
 				 Grid.Column="1">
 			<StackPanel>
 				<Label Content="{Binding Name}" FontWeight="Bold" FontSize="18" Margin="20 0 0 0"/>
-				<ListBox ItemsSource="{Binding Dialogs}" SelectedIndex="{Binding SelectedDialog}">
-					<ListBox.ItemTemplate>
+				<ItemsControl ItemsSource="{Binding Messages}">
+					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<views:DialogEditorView Margin="20 0 20 0"/>
 						</DataTemplate>
-					</ListBox.ItemTemplate>	
-				</ListBox>
+					</ItemsControl.ItemTemplate>	
+				</ItemsControl>
 			</StackPanel>
 		</Border>
 	</UniformGrid>
