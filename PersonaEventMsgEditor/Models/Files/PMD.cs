@@ -68,6 +68,10 @@ public class PMD
     /// <param name="message">A stream containing the new bmd file to inject</param>
     public async Task InjectMessage(Stream message)
     {
+        // Align message to 16 bytes
+        if(message.Length % 16 != 0)
+            message.SetLength(16 - (message.Length % 16) + message.Length);
+
         // Get change in file length
         var reader = new BinaryReader(_file);
         _file.Position = 4;
@@ -75,7 +79,6 @@ public class PMD
         int msgLengthDiff = (int)(message.Length - _msgStream.Length);
 
         // Change file length
-        _file.SetLength(fileSize + msgLengthDiff);
         _file.Position = 4;
         var writer = new BinaryWriter(_file);
         writer.Write(fileSize + msgLengthDiff);
@@ -116,6 +119,9 @@ public class PMD
         {
             await movedData.CopyToAsync(_file);
         }
+
+        // Set the length of the file last (in case it got smaller, stuff would get messed up copying old data)
+        _file.SetLength(fileSize + msgLengthDiff);
     }
 
     /// <summary>
