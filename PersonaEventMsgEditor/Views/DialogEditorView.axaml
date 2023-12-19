@@ -12,11 +12,13 @@
 			<TextBlock>Character</TextBlock>
 			<ComboBox ItemsSource="{Binding Bustup.Characters}" SelectedItem="{Binding Bustup.Character}"/>
 
-			<TextBlock>Outfit</TextBlock>
-			<ComboBox ItemsSource="{Binding Bustup.Outfits}" SelectedItem="{Binding Bustup.Outfit}"/>
+			<TextBlock IsVisible="{Binding Bustup.Exists}">Outfit</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Outfits}" SelectedItem="{Binding Bustup.Outfit}"
+					  IsVisible="{Binding Bustup.Exists}"/>
 
-			<TextBlock>Emotion</TextBlock>
-			<ComboBox ItemsSource="{Binding Bustup.Emotions}" SelectedItem="{Binding Bustup.Emotion}"/>
+			<TextBlock IsVisible="{Binding Bustup.Exists}">Emotion</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Emotions}" SelectedItem="{Binding Bustup.Emotion}"
+					  IsVisible="{Binding Bustup.Exists}"/>
 		</StackPanel>
 		<TextBox Text="{Binding Text}"/>
 	</StackPanel>

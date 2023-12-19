@@ -62,6 +62,10 @@ public class Bustup : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _position, value);
     }
 
+    private readonly ObservableAsPropertyHelper<bool> _exists;
+    public bool Exists => _exists.Value;
+
+
     public Bustup() : this(BustupCharacter.None, 0, 0, BustupPosition.Right)
     {
     }
@@ -76,6 +80,10 @@ public class Bustup : ReactiveObject
         this.WhenAnyValue(x => x.Character)
             .Select(GetValidOutfits)
             .ToProperty(this, x => x.Outfits, out _outfits);
+
+        this.WhenAnyValue(x => x.Character)
+            .Select(x => x != BustupCharacter.None)
+            .ToProperty(this, x => x.Exists, out _exists);
 
         this.WhenAnyValue(x => x.Character, x => x.Outfit, GetValidEmotions)
             .ToProperty(this, x => x.Emotions, out _emotions);
