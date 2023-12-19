@@ -1,109 +1,31 @@
 ﻿using AmicitiaLibrary.Graphics.TMX;
 using AtlusFileSystemLibrary.FileSystems.PAK;
 using Avalonia.Media.Imaging;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using PersonaEventMsgEditor.Services;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PersonaEventMsgEditor.Models.Event;
-// TODO Split this into a model and view model
-public class Bustup : ReactiveObject
+public class Bustup
 {
-    private readonly ObservableAsPropertyHelper<Bitmap?> _image;
-    public Bitmap? Image => _image.Value;
+    private static Dictionary<BustupCharacter, List<int>> _cachedOutfits = new();
+    private static Dictionary<(BustupCharacter character, int outfit), List<int>> _cachedEmotions = new();
+    public static BustupCharacter[] Characters => Enum.GetValues<BustupCharacter>();
 
-    private BustupCharacter _character;
-    // TODO fix null reference exceptions with these setters (make them nullable maybe?)
-    public BustupCharacter Character
+
+    public static List<int> GetValidEmotions(BustupCharacter character, int outfit)
     {
-        get => _character;
-        set => this.RaiseAndSetIfChanged(ref _character, value);
-    }
-    private static BustupCharacter[] _characters = Enum.GetValues<BustupCharacter>();
-    public BustupCharacter[] Characters => _characters;
-
-
-    // TODO map this to an enum as well (if emotions are uniform)
-    private int _emotion;
-    public int Emotion
-    {
-        get => _emotion;
-        set => this.RaiseAndSetIfChanged(ref _emotion, value);
-    }
-    private readonly ObservableAsPropertyHelper<List<int>> _emotions;
-    public List<int> Emotions => _emotions.Value;
-    private Dictionary<(BustupCharacter character, int outfit), List<int>> _cachedEmotions = new();
-
-
-    // TODO map this to an enum as well (if it makes sense to)
-    private int _outfit;
-    public int Outfit
-    {
-        get => _outfit;
-        set => this.RaiseAndSetIfChanged(ref _outfit, value);
-    }
-    private readonly ObservableAsPropertyHelper<List<int>> _outfits;
-    public List<int> Outfits => _outfits.Value;
-    private Dictionary<BustupCharacter, List<int>> _characterOutfits = new();
-
-
-    private BustupPosition _position;
-    public BustupPosition Position
-    {
-        get => _position;
-        set => this.RaiseAndSetIfChanged(ref _position, value);
-    }
-
-    private readonly ObservableAsPropertyHelper<bool> _exists;
-    public bool Exists => _exists.Value;
-
-
-    public Bustup() : this(BustupCharacter.None, 0, 0, BustupPosition.Right)
-    {
-    }
-
-    public Bustup(BustupCharacter character, int outfit, int emotion, BustupPosition position)
-    {
-        Character = character;
-        Outfit = outfit;
-        Emotion = emotion;
-        Position = position;
-
-        this.WhenAnyValue(x => x.Character)
-            .Select(GetValidOutfits)
-            .ToProperty(this, x => x.Outfits, out _outfits);
-
-        this.WhenAnyValue(x => x.Character)
-            .Select(x => x != BustupCharacter.None)
-            .ToProperty(this, x => x.Exists, out _exists);
-
-        this.WhenAnyValue(x => x.Character, x => x.Outfit, GetValidEmotions)
-            .ToProperty(this, x => x.Emotions, out _emotions);
-
-        this.WhenAnyValue(x => x.Character, x => x.Outfit, x => x.Emotion,
-            (character, outfit, emotion) => LoadBustup())
-            .ToProperty(this, x => x.Image, out _image);
-    }
-
-    private List<int> GetValidEmotions(BustupCharacter character, int outfit)
-    {
-        if(character == BustupCharacter.None)
+        if (character == BustupCharacter.None)
             return new List<int>();
 
         if (_cachedEmotions.ContainsKey((character, outfit)))
         {
             var cachedEmotions = _cachedEmotions[(character, outfit)];
-            
-            if (cachedEmotions.Count > 0 && !cachedEmotions.Contains(Emotion))
-                Emotion = cachedEmotions.First();
             return cachedEmotions;
         }
 
@@ -122,21 +44,16 @@ public class Bustup : ReactiveObject
             emotions.Add(emotion);
         }
 
-        if (emotions.Count > 0 && !emotions.Contains(Emotion))
-            Emotion = emotions.First();
-
         var emotionsList = emotions.ToList();
         _cachedEmotions[(character, outfit)] = emotionsList;
         return emotionsList;
     }
 
-    private List<int> GetValidOutfits(BustupCharacter character)
+    public static List<int> GetValidOutfits(BustupCharacter character)
     {
-        if (_characterOutfits.ContainsKey(character))
+        if (_cachedOutfits.ContainsKey(character))
         {
-            var cachedOutfits = _characterOutfits[character];
-            if (cachedOutfits.Count > 0 && !cachedOutfits.Contains(Outfit))
-                Outfit = cachedOutfits.First();
+            var cachedOutfits = _cachedOutfits[character];
             return cachedOutfits;
         }
 
@@ -155,20 +72,17 @@ public class Bustup : ReactiveObject
             outfits.Add(outfit);
         }
 
-        _characterOutfits[character] = outfits.ToList();
-        if (outfits.Count > 0 && !outfits.Contains(Outfit))
-            Outfit = outfits.First();
-
-        return _characterOutfits[character];
+        _cachedOutfits[character] = outfits.ToList();
+        return _cachedOutfits[character];
     }
 
-    private Bitmap? LoadBustup()
+    public static Bitmap? LoadImage(BustupCharacter character, int outfit, int emotion)
     {
-        if (_character == BustupCharacter.None) return null;
+        if (character == BustupCharacter.None) return null;
 
         // TODO make this async somehow
-        var bustupBinName = $@"I_B_{(int)_character:D2}{_outfit:X}{_emotion:X}.BIN";
-        var bustupTmxName = $"i_bust_{(int)_character:D2}_{_outfit:x}{_emotion:x}.tmx";
+        var bustupBinName = $@"I_B_{(int)character:D2}{outfit:X}{emotion:X}.BIN";
+        var bustupTmxName = $"i_bust_{(int)character:D2}_{outfit:x}{emotion:x}.tmx";
 
         var cvmService = App.Current?.Services?.GetService<ICvmService>();
         if (cvmService == null)
@@ -177,12 +91,12 @@ public class Bustup : ReactiveObject
         if (cvmService.GetFiles(@"\BUSTUP", $"*{bustupBinName}*").Length == 0)
         {
             // Try alternative name only used by some bustups :(
-            bustupBinName = $@"I_B_{(int)_character:D2}{_outfit:X}{_emotion:X}A.BIN";
+            bustupBinName = $@"I_B_{(int)character:D2}{outfit:X}{emotion:X}A.BIN";
             if (cvmService.GetFiles(@"\BUSTUP", $"*{bustupBinName}*").Length == 0)
             {
                 return null;
             }
-            bustupTmxName = $"i_bust_{(int)_character:D2}_{_outfit:x}{_emotion:x}a.tmx";
+            bustupTmxName = $"i_bust_{(int)character:D2}_{outfit:x}{emotion:x}a.tmx";
         }
 
         var bustupBin = cvmService.GetFile(@$"BUSTUP\{bustupBinName}");

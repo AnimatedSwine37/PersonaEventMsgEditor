@@ -36,8 +36,8 @@ public class EventMessageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _speaker, value);
     }
 
-    private Bustup _bustup;
-    public Bustup Bustup
+    private BustupViewModel _bustup;
+    public BustupViewModel Bustup
     {
         get => _bustup;
         private set => this.RaiseAndSetIfChanged(ref _bustup, value);
@@ -68,7 +68,7 @@ public class EventMessageViewModel : ViewModelBase
         Text = msgWriter.ToString();
     }
 
-    private Bustup GetBustup()
+    private BustupViewModel GetBustup()
     {
         // TODO deal with multiple pages
         var page = _dialog.Pages[0];
@@ -77,7 +77,7 @@ public class EventMessageViewModel : ViewModelBase
             .Select(x => (FunctionToken)x);
         // Check if the bustup function is ever called
         if (!funcs.Any(x => x.FunctionTableIndex == 0 && x.FunctionIndex == 31))
-            return new Bustup();
+            return new BustupViewModel();
 
         var bustupFunc = funcs.First(x => x.FunctionTableIndex == 0 && x.FunctionIndex == 31);
         
@@ -85,6 +85,6 @@ public class EventMessageViewModel : ViewModelBase
         int outfit = bustupFunc.Arguments[1];
         int emotion = bustupFunc.Arguments[2];
         int position = bustupFunc.Arguments[3];
-        return new Bustup((BustupCharacter)character, outfit, emotion, (BustupPosition)position);
+        return new BustupViewModel((BustupCharacter)character, outfit, emotion, (BustupPosition)position);
     }
 }
