@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using PersonaEventMsgEditor.Models.Event;
 using System.Linq;
 using System;
+using AtlusScriptLibrary.MessageScriptLanguage;
 
 namespace PersonaEventMsgEditor.ViewModels;
 public class BustupViewModel : ViewModelBase
@@ -80,6 +81,11 @@ public class BustupViewModel : ViewModelBase
             .Select(x => x != BustupCharacter.None)
             .ToProperty(this, x => x.Exists, out _exists);
 
+    }
+
+    public FunctionToken GetToken()
+    {
+        return new FunctionToken(0, 31, (ushort)Character, (ushort)Outfit, (ushort)Emotion, (ushort)Position);
     }
 
 }

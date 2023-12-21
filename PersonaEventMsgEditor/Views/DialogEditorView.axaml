@@ -19,6 +19,9 @@
 			<TextBlock IsVisible="{Binding Bustup.Exists}">Emotion</TextBlock>
 			<ComboBox ItemsSource="{Binding Bustup.Emotions}" SelectedItem="{Binding Bustup.Emotion}"
 					  IsVisible="{Binding Bustup.Exists}"/>
+
+			<TextBlock>VoiceLine</TextBlock>
+			<TextBlock Text="{Binding Voice.Id}"/>
 		</StackPanel>
 		<TextBox Text="{Binding Text}"/>
 	</StackPanel>

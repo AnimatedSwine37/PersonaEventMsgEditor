@@ -37,7 +37,7 @@ public class EventViewModel : ViewModelBase
         {
             if (dialog.Kind == DialogKind.Message)
             {
-                Messages.Add(new EventMessageViewModel((MessageDialog)dialog));
+                Messages.Add(new EventMessageViewModel((MessageDialog)dialog, majorId, minorId));
             }
             else
             {
@@ -86,16 +86,12 @@ public class EventViewModel : ViewModelBase
 
     public async void Save()
     {
-        StringBuilder sb = new();
-        foreach (var dialog in Messages)
+        foreach(var message in Messages.ToList())
         {
-            sb.AppendLine(dialog.Text);
+            message.Save();
         }
 
-        var compiler = new MessageScriptCompiler(FormatVersion.Version1, AtlusEncoding.Persona3);
-        var compiled = compiler.Compile(sb.ToString());
-
-        using var newMessageScript = compiled.ToStream();
+        using var newMessageScript = _messageScript.ToStream();
 
         // TODO open the file as read-write from the start so we're not copying between so many streams
         await _pmd.InjectMessage(newMessageScript);
