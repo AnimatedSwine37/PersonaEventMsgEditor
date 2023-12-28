@@ -41,11 +41,11 @@ public class EventMessageViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _bustup, value);
     }
 
-    private Voice? _voice;
-    public Voice? Voice
+    private int? _voiceId;
+    public int? VoiceId
     {
-        get => _voice;
-        set => this.RaiseAndSetIfChanged(ref _voice, value);
+        get => _voiceId;
+        set => this.RaiseAndSetIfChanged(ref _voiceId, value);
     }
 
     private int _eventMajor;
@@ -62,7 +62,7 @@ public class EventMessageViewModel : ViewModelBase
         Speaker = "To Implement";
         Bustup = GetBustup();
         Text = GetText();
-        Voice = GetVoice();
+        VoiceId = GetVoiceId();
     }
 
     private string GetText()
@@ -79,7 +79,7 @@ public class EventMessageViewModel : ViewModelBase
         return sb.ToString();
     }
 
-    private Voice? GetVoice()
+    private int? GetVoiceId()
     {
         // TODO deal with multiple pages
         var page = _dialog.Pages[0];
@@ -92,8 +92,7 @@ public class EventMessageViewModel : ViewModelBase
 
         var voiceFunc = funcs.First(x => x.FunctionTableIndex == 2 && x.FunctionIndex == 8);
 
-        int id = voiceFunc.Arguments[0];
-        return new Voice(id, _eventMajor, _eventMinor);
+        return voiceFunc.Arguments[0];
     }
 
     private string? PrintToken(IToken token)
@@ -173,9 +172,9 @@ public class EventMessageViewModel : ViewModelBase
         }
 
         // Add voice token
-        if (_voice != null)
+        if (VoiceId != null)
         {
-            tokens.Add(_voice.GetToken());
+            tokens.Add(new FunctionToken(2, 8, (ushort)VoiceId));
         }
 
         // Add text and any functions in it 
@@ -211,7 +210,7 @@ public class EventMessageViewModel : ViewModelBase
             tokens.Add(new NewLineToken());
 
         // Add end tokens
-        if (_voice != null)
+        if (VoiceId != null)
         {
             tokens.Add(new FunctionToken(2, 7, 10));
         }

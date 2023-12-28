@@ -21,7 +21,7 @@
 					  IsVisible="{Binding Bustup.Exists}"/>
 
 			<TextBlock>VoiceLine</TextBlock>
-			<TextBlock Text="{Binding Voice.Id}"/>
+			<NumericUpDown Value="{Binding VoiceId}"/>
 		</StackPanel>
 		<TextBox Text="{Binding Text}"/>
 	</StackPanel>

@@ -1,17 +1,16 @@
 ﻿using Avalonia.Platform.Storage;
 using PersonaEventMsgEditor.Models.Files;
-using PersonaEventMsgEditor.Models;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using AtlusScriptLibrary.MessageScriptLanguage;
-using AtlusScriptLibrary.MessageScriptLanguage.Compiler;
 using AtlusScriptLibrary.Common.Text.Encodings;
-using ReactiveUI;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using ReactiveUI;
 using System.Linq;
+using System;
 
 namespace PersonaEventMsgEditor.ViewModels;
 public class EventViewModel : ViewModelBase
@@ -21,7 +20,22 @@ public class EventViewModel : ViewModelBase
     public int MajorId { get; }
     public int MinorId { get; }
     public ObservableCollection<EventMessageViewModel> Messages { get; } = new();
-    private MessageScript _messageScript { get; set; }
+
+    private EventMessageViewModel? _selectedMessage;
+    public EventMessageViewModel? SelectedMessage
+    {
+        get => _selectedMessage;
+        set => this.RaiseAndSetIfChanged(ref _selectedMessage, value);
+    }
+
+    private AudioPlayerViewModel _audioPlayer;
+    public AudioPlayerViewModel AudioPlayer
+    {
+        get => _audioPlayer;
+        set => this.RaiseAndSetIfChanged(ref _audioPlayer, value);
+    }
+
+    private MessageScript _messageScript;
     private PMD _pmd;
     private IStorageFile _file;
 
@@ -32,6 +46,7 @@ public class EventViewModel : ViewModelBase
         MinorId = minorId;
         _messageScript = messageScript;
         _pmd = pmd;
+        AudioPlayer = new AudioPlayerViewModel(majorId, minorId);
 
         foreach (var dialog in messageScript.Dialogs)
         {
@@ -44,6 +59,9 @@ public class EventViewModel : ViewModelBase
                 // TODO make it work with selections as well
             }
         }
+
+        this.WhenAnyValue(x => x.SelectedMessage.VoiceId)
+            .Subscribe(x => { AudioPlayer.AdxIndex = x; });
 
         RxApp.MainThreadScheduler.Schedule(LoadBustups);
     }
@@ -62,7 +80,7 @@ public class EventViewModel : ViewModelBase
         int major = 0;
         int minor = 0;
 
-        var match = Regex.Match(file.Name, @"E(\d+)_(\d+)\.PM1", RegexOptions.IgnoreCase);
+        var match = Regex.Match(file.Name, @"E(\d+)_(\d+)", RegexOptions.IgnoreCase);
         if (match.Success)
         {
             major = int.Parse(match.Groups[1].Value);
@@ -86,7 +104,7 @@ public class EventViewModel : ViewModelBase
 
     public async void Save()
     {
-        foreach(var message in Messages.ToList())
+        foreach (var message in Messages.ToList())
         {
             message.Save();
         }

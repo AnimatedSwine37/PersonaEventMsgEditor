@@ -32,6 +32,7 @@ public partial class App : Application
 
             services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
             services.AddSingleton<ICvmService>(x => new CvmService());
+            services.AddSingleton<IPlaybackService>(x => new PlaybackService());
 
             Services = services.BuildServiceProvider();
 
