@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PersonaEventMsgEditor.Views.PageView"
+			 x:DataType="vm:PageViewModel">
+
+	<StackPanel>
+		<StackPanel Orientation="Horizontal">
+			<TextBlock>Character</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Characters}" SelectedItem="{Binding Bustup.Character}"/>
+
+			<TextBlock IsVisible="{Binding Bustup.Exists}">Outfit</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Outfits}" SelectedItem="{Binding Bustup.Outfit}"
+					  IsVisible="{Binding Bustup.Exists}"/>
+
+			<TextBlock IsVisible="{Binding Bustup.Exists}">Emotion</TextBlock>
+			<ComboBox ItemsSource="{Binding Bustup.Emotions}" SelectedItem="{Binding Bustup.Emotion}"
+					  IsVisible="{Binding Bustup.Exists}"/>
+
+			<TextBlock>VoiceLine</TextBlock>
+			<NumericUpDown Value="{Binding VoiceId}"/>
+		</StackPanel>
+		<TextBox Text="{Binding Text}"/>
+	</StackPanel>
+
+</UserControl>

@@ -88,4 +88,9 @@ public class BustupViewModel : ViewModelBase
         return new FunctionToken(0, 31, (ushort)Character, (ushort)Outfit, (ushort)Emotion, (ushort)Position);
     }
 
+    public BustupViewModel Clone()
+    {
+        return new BustupViewModel(Character, Outfit, Emotion, Position);
+    }
+
 }

@@ -52,7 +52,7 @@ public class EventViewModel : ViewModelBase
         {
             if (dialog.Kind == DialogKind.Message)
             {
-                Messages.Add(new EventMessageViewModel((MessageDialog)dialog, majorId, minorId));
+                Messages.Add(new EventMessageViewModel((MessageDialog)dialog));
             }
             else
             {
@@ -60,7 +60,7 @@ public class EventViewModel : ViewModelBase
             }
         }
 
-        this.WhenAnyValue(x => x.SelectedMessage.VoiceId)
+        this.WhenAnyValue(x => x.SelectedMessage.SelectedPage.VoiceId)
             .Subscribe(x => { AudioPlayer.AdxIndex = x; });
 
         RxApp.MainThreadScheduler.Schedule(LoadBustups);

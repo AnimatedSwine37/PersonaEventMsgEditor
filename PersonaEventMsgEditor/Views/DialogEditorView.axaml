@@ -8,21 +8,8 @@
 			 x:DataType="vm:EventMessageViewModel">
 
 	<StackPanel>
-		<StackPanel Orientation="Horizontal">
-			<TextBlock>Character</TextBlock>
-			<ComboBox ItemsSource="{Binding Bustup.Characters}" SelectedItem="{Binding Bustup.Character}"/>
-
-			<TextBlock IsVisible="{Binding Bustup.Exists}">Outfit</TextBlock>
-			<ComboBox ItemsSource="{Binding Bustup.Outfits}" SelectedItem="{Binding Bustup.Outfit}"
-					  IsVisible="{Binding Bustup.Exists}"/>
-
-			<TextBlock IsVisible="{Binding Bustup.Exists}">Emotion</TextBlock>
-			<ComboBox ItemsSource="{Binding Bustup.Emotions}" SelectedItem="{Binding Bustup.Emotion}"
-					  IsVisible="{Binding Bustup.Exists}"/>
-
-			<TextBlock>VoiceLine</TextBlock>
-			<NumericUpDown Value="{Binding VoiceId}"/>
-		</StackPanel>
-		<TextBox Text="{Binding Text}"/>
+		<Label Content="{Binding Name}" FontWeight="Bold" FontSize="16"/>
+		<ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"/>
 	</StackPanel>
+
 </UserControl>
