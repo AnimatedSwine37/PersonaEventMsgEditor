@@ -7,3 +7,6 @@
 [submodule "Submodules\\Amicitia"]
 	path = Submodules\\Amicitia
 	url = https://github.com/tge-was-taken/Amicitia
+[submodule "Submodules\\puyotools"]
+	path = Submodules\\puyotools
+	url = https://github.com/nickworonekin/puyotools.git
