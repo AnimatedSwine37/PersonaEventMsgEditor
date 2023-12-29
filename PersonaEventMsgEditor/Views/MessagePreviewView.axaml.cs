@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 
 namespace PersonaEventMsgEditor.Views;
-public partial class PreviewView : UserControl
+public partial class MessagePreviewView : UserControl
 {
-    public PreviewView()
+    public MessagePreviewView()
     {
         InitializeComponent();
     }

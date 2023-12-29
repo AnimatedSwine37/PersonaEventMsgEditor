@@ -1,10 +1,9 @@
 ﻿using AtlusScriptLibrary.MessageScriptLanguage;
-using PersonaEventMsgEditor.Models.Event;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 
 namespace PersonaEventMsgEditor.ViewModels;
-public class EventMessageViewModel : ViewModelBase
+public class MessageViewModel : ViewModelBase, IDialogViewModel
 {
     private string _name;
     public string Name
@@ -29,13 +28,15 @@ public class EventMessageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedPage, value);
     }
 
+    public int? VoiceIndex => _selectedPage?.VoiceId;
+
     private MessageDialog _dialog;
 
-    public EventMessageViewModel(MessageDialog dialog)
+    public MessageViewModel(MessageDialog dialog)
     {
         _dialog = dialog;
         _name = dialog.Name;
-        _speaker = dialog.Speaker.ToString();
+        _speaker = dialog.Speaker?.ToString();
 
         BustupViewModel? bustup = null;
         foreach(var page in dialog.Pages)

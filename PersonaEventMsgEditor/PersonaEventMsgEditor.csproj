@@ -32,11 +32,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\MessageView.axaml.cs">
+      <DependentUpon>MessageView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\MainView.axaml.cs">
       <DependentUpon>MainView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\PageView.axaml.cs">
       <DependentUpon>PageView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MessagePreviewView.axaml.cs">
+      <DependentUpon>MessagePreviewView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

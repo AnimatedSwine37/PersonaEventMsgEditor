@@ -4,12 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="PersonaEventMsgEditor.Views.DialogEditorView"
-			 x:DataType="vm:EventMessageViewModel">
+             x:Class="PersonaEventMsgEditor.Views.SelectionView"
+			 x:DataType="vm:SelectionViewModel">
 
 	<StackPanel>
 		<Label Content="{Binding Name}" FontWeight="Bold" FontSize="16"/>
-		<ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"/>
+
+		<ItemsControl ItemsSource="{Binding Options}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<TextBox Text="{Binding Text}"/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 	</StackPanel>
 
 </UserControl>

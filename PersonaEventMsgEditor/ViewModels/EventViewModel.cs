@@ -19,14 +19,20 @@ public class EventViewModel : ViewModelBase
     public string Name => _file.Name;
     public int MajorId { get; }
     public int MinorId { get; }
-    public ObservableCollection<EventMessageViewModel> Messages { get; } = new();
+    public ObservableCollection<IDialogViewModel> Dialogs { get; } = new();
 
-    private EventMessageViewModel? _selectedMessage;
-    public EventMessageViewModel? SelectedMessage
+    private IDialogViewModel? _selectedDialog;
+    public IDialogViewModel? SelectedDialog
     {
-        get => _selectedMessage;
-        set => this.RaiseAndSetIfChanged(ref _selectedMessage, value);
+        get => _selectedDialog;
+        set => this.RaiseAndSetIfChanged(ref _selectedDialog, value);
     }
+
+    private readonly ObservableAsPropertyHelper<MessageViewModel?> _selectedMessage;
+    public MessageViewModel? SelectedMessage => _selectedMessage.Value;
+
+    private readonly ObservableAsPropertyHelper<SelectionViewModel?> _selectedSelection;
+    public SelectionViewModel? SelectedSelection => _selectedSelection.Value;
 
     private AudioPlayerViewModel _audioPlayer;
     public AudioPlayerViewModel AudioPlayer
@@ -52,23 +58,47 @@ public class EventViewModel : ViewModelBase
         {
             if (dialog.Kind == DialogKind.Message)
             {
-                Messages.Add(new EventMessageViewModel((MessageDialog)dialog));
+                Dialogs.Add(new MessageViewModel((MessageDialog)dialog));
             }
-            else
+            else 
             {
-                // TODO make it work with selections as well
+                Dialogs.Add(new SelectionViewModel((SelectionDialog)dialog));
             }
         }
 
-        this.WhenAnyValue(x => x.SelectedMessage.SelectedPage.VoiceId)
+        this.WhenAnyValue(x => x.SelectedDialog)
+            .Select(x => x is SelectionViewModel ? (SelectionViewModel)x : null)
+            .ToProperty(this, x => x.SelectedSelection, out _selectedSelection);
+
+
+        this.WhenAnyValue(x => x.SelectedDialog)
+                   .Select(x => x is MessageViewModel ? (MessageViewModel)x : GetLastMessage(x))
+                   .ToProperty(this, x => x.SelectedMessage, out _selectedMessage);
+
+        this.WhenAnyValue(x => x.SelectedMessage.VoiceIndex)
             .Subscribe(x => { AudioPlayer.AdxIndex = x; });
 
         RxApp.MainThreadScheduler.Schedule(LoadBustups);
     }
 
+    // Gets the first message before the specified dialog 
+    // If a selection is displayed then the message before it also is
+    private MessageViewModel? GetLastMessage(IDialogViewModel? dialog)
+    {
+        if (dialog == null) return null;
+
+        var dialogs = Dialogs.ToList();
+        for(int i = dialogs.IndexOf(dialog); i >= 0; i--)
+        {
+            if (dialogs[i] is MessageViewModel)
+                return (MessageViewModel)dialogs[i];
+        }
+        return null;
+    }
+
     private async void LoadBustups()
     {
-        foreach (var message in Messages.ToList())
+        foreach (var message in Dialogs.ToList())
         {
             // TODO add this back when I've actually got them loading asynchronously in some way
             //await message.LoadBustupAsync();
@@ -104,7 +134,7 @@ public class EventViewModel : ViewModelBase
 
     public async void Save()
     {
-        foreach (var message in Messages.ToList())
+        foreach (var message in Dialogs.ToList())
         {
             message.Save();
         }

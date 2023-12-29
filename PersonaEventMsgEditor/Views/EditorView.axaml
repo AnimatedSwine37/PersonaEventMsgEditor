@@ -12,25 +12,21 @@
 		
 		<!--Preview Window-->
 		<DockPanel Grid.Column="0">
-			<views:PreviewView DataContext="{Binding SelectedMessage.SelectedPage}" 
+			<views:SelectionPreviewView DataContext="{Binding SelectedSelection}"
+				   DockPanel.Dock="Top"/>
+			<views:MessagePreviewView DataContext="{Binding SelectedMessage}" 
 							   DockPanel.Dock="Top"/>
 			<views:AudioPlayerView DataContext="{Binding AudioPlayer}" 
 								   DockPanel.Dock="Bottom"/>
 		</DockPanel>
 
 
-		<!--Meessage Editor-->
+		<!--Message Editor-->
 		<Border Background="Gray" CornerRadius="20" Margin="40"
 				 Grid.Column="1">
 			<StackPanel>
 				<Label Content="{Binding Name}" FontWeight="Bold" FontSize="18" Margin="20 0 0 0"/>
-				<ListBox ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessage}">
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<views:DialogEditorView Margin="20 0 20 0"/>
-						</DataTemplate>
-					</ListBox.ItemTemplate>	
-				</ListBox>
+				<ListBox ItemsSource="{Binding Dialogs}" SelectedItem="{Binding SelectedDialog}"/>
 			</StackPanel>
 		</Border>
 	</UniformGrid>
