@@ -13,9 +13,18 @@
 		<Panel>
 			<!--For getting positioning and sizing right-->
 			<!--<Image Source="avares://PersonaEventMsgEditor/Assets/P3F-Message.png"/>-->
-			<views:SelectionPreviewView DataContext="{Binding SelectedSelection}"
-										Margin="10,10,10,10"/>
-			<views:MessagePreviewView DataContext="{Binding SelectedMessage}"/>
+			<!--<Image Source="avares://PersonaEventMsgEditor/Assets/P3F-Selection.png"/>-->
+			
+			<views:MessagePreviewView
+				x:Name="MessagePreview"
+				DataContext="{Binding SelectedMessage}"/>
+			<views:SelectionPreviewView
+				x:Name="SelectionPreview"
+				DataContext="{Binding SelectedSelection}"
+				VerticalAlignment="Bottom"
+				HorizontalAlignment="Right"
+				Width="290" Height="104" 
+				Margin="0,0,29,68"/>
 		</Panel>
 	</Border>
 

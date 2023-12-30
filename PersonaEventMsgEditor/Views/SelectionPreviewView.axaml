@@ -7,12 +7,29 @@
              x:Class="PersonaEventMsgEditor.Views.SelectionPreviewView"
 			 x:DataType="vm:SelectionViewModel">
 
-	<ItemsControl ItemsSource="{Binding Options}">
-		<ItemsControl.ItemTemplate>
-			<DataTemplate>
-				<TextBlock Text="{Binding Text}"/>
-			</DataTemplate>
-		</ItemsControl.ItemTemplate>	
-	</ItemsControl>
+	<Panel>
+
+		<Svg
+			x:Name="SelBoxBackground"
+			Path="/Assets/message-box.svg"
+			Stretch="Fill"/>
+
+		<ItemsControl ItemsSource="{Binding Options}"
+					  Margin="20,0,0,0" VerticalAlignment="Center">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<UniformGrid Rows="{Binding Options.Count}"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Text}"
+							   FontFamily="{StaticResource P3F-Font}"
+							   FontSize="15"
+							   Foreground="#52525c"/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</Panel>
 
 </UserControl>
