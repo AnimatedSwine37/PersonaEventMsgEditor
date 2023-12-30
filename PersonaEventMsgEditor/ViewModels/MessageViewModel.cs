@@ -71,6 +71,9 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
     /// </summary>
     public void Save()
     {
+        if(!string.IsNullOrEmpty(Speaker))
+            _dialog.Speaker = new NamedSpeaker(Speaker);
+        
         foreach (var page in Pages)
         {
             page.Save();
