@@ -14,17 +14,23 @@
 			<!--For getting positioning and sizing right-->
 			<!--<Image Source="avares://PersonaEventMsgEditor/Assets/P3F-Message.png"/>-->
 			<!--<Image Source="avares://PersonaEventMsgEditor/Assets/P3F-Selection.png"/>-->
-			
-			<views:MessagePreviewView
+
+			<!--TODO find a better way to hide the options (the extra panel seems like it shouldn't be necessary)-->
+			<Panel IsVisible="{Binding SelectedMessage, Converter={x:Static ObjectConverters.IsNotNull}}">
+				<views:MessagePreviewView
 				x:Name="MessagePreview"
 				DataContext="{Binding SelectedMessage}"/>
-			<views:SelectionPreviewView
-				x:Name="SelectionPreview"
-				DataContext="{Binding SelectedSelection}"
-				VerticalAlignment="Bottom"
-				HorizontalAlignment="Right"
-				Width="290" Height="104" 
-				Margin="0,0,29,68"/>
+			</Panel>
+			
+			<Panel IsVisible="{Binding SelectedSelection, Converter={x:Static ObjectConverters.IsNotNull}}">
+				<views:SelectionPreviewView
+					x:Name="SelectionPreview"
+					DataContext="{Binding SelectedSelection}"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Right"
+					Width="290" Height="104"
+					Margin="0,0,29,68"/>
+			</Panel>
 		</Panel>
 	</Border>
 
