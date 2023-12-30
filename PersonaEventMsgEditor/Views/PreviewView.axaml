@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
+			 xmlns:views="using:PersonaEventMsgEditor.Views"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PersonaEventMsgEditor.Views.PreviewView"
+			 x:DataType="vm:EventViewModel"
+			 Width="467" Height="350">
+
+	<Border Background="LightBlue">
+		<Panel>
+			<!--For getting positioning and sizing right-->
+			<!--<Image Source="avares://PersonaEventMsgEditor/Assets/P3F-Message.png"/>-->
+			<views:SelectionPreviewView DataContext="{Binding SelectedSelection}"
+										Margin="10,10,10,10"/>
+			<views:MessagePreviewView DataContext="{Binding SelectedMessage}"/>
+		</Panel>
+	</Border>
+
+</UserControl>

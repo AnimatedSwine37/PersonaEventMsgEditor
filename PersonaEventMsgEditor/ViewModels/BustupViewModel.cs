@@ -38,6 +38,14 @@ public class BustupViewModel : ViewModelBase
 
     public BustupCharacter[] Characters => Bustup.Characters;
 
+    // Just for design time use!
+    internal BustupViewModel(BustupCharacter character, int outfit, int emotion, BustupPosition position, List<int> outfits, List<int> emotions)
+    {
+        Character = character;
+        Outfit = outfit;
+        Emotion = emotion;
+        Position = position;
+    }
 
     public BustupViewModel() : this(BustupCharacter.None, 0, 0, BustupPosition.Right)
     {

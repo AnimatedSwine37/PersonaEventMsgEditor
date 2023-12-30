@@ -33,6 +33,14 @@ public class PageViewModel : ViewModelBase
 
     private TokenText _dialog;
 
+    // Just for design time use!
+    internal PageViewModel(string text, BustupViewModel bustup, int? voiceId)
+    {
+        Text = text;
+        Bustup = bustup;
+        VoiceId = voiceId;
+    }
+
     public PageViewModel(TokenText dialog)
     {
         _dialog = dialog;

@@ -3,14 +3,51 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 mc:Ignorable="d" d:DesignWidth="467" d:DesignHeight="350"
              x:Class="PersonaEventMsgEditor.Views.MessagePreviewView"
 			 x:DataType="vm:MessageViewModel">
 
-	<StackPanel>
-		<TextBlock Text="{Binding SelectedPage.Text}" DockPanel.Dock="Bottom"/>
-		<Image Width="200" Stretch="Uniform"
-			   Source="{Binding SelectedPage.Bustup.Image}"/>
-	</StackPanel>
-	
+	<Design.DataContext>
+		<vm:DesignMessageViewModel/>
+	</Design.DataContext>
+
+	<RelativePanel>
+		<Image x:Name="Bustup"
+			   Height="378" Stretch="Uniform"
+			   Margin="0,0,-96,-20"
+			   Source="{Binding SelectedPage.Bustup.Image}"
+			   RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True"/>
+
+		<Svg
+			x:Name="MessageBoxBackground"
+			Path="/Assets/message-box.svg"
+			Stretch="Fill"
+			Height="92"
+			RelativePanel.AlignHorizontalCenterWithPanel="True"
+			RelativePanel.AlignBottomWithPanel="True"
+			Margin="14,0,14,7"/>
+
+		<TextBlock x:Name="Speaker"
+		   Text="{Binding Speaker}"
+		   FontFamily="{StaticResource P3F-Font}"
+		   FontSize="15"
+		   FontWeight="Bold"
+		   Foreground="#58171d"
+		   RelativePanel.AlignLeftWith="MessageBoxBackground"
+		   RelativePanel.AlignTopWith="MessageBoxBackground"
+		   Margin="31,13,0,0"/>
+
+		<TextBlock x:Name="Message"
+				   Text="{Binding SelectedPage.Text}"
+				   FontFamily="{StaticResource P3F-Font}"
+				   FontSize="15"
+				   Foreground="#52525c"
+				   RelativePanel.AlignLeftWith="Speaker"
+				   RelativePanel.Below="Speaker"
+				   Margin="39,-10,0,0"
+				   LineHeight="16">
+		</TextBlock>
+
+	</RelativePanel>
+
 </UserControl>
