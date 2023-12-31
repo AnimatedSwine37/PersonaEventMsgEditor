@@ -23,7 +23,7 @@
 			<TextBlock>VoiceLine</TextBlock>
 			<NumericUpDown Value="{Binding VoiceId}"/>
 		</StackPanel>
-		<TextBox Text="{Binding Text}"/>
+		<TextBox Text="{Binding Text}" AcceptsReturn="True"/>
 	</StackPanel>
 
 </UserControl>
