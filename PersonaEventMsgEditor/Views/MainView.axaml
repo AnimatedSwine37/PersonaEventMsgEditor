@@ -22,6 +22,7 @@
 					<MenuItem Header="From Disk" Command="{Binding OpenFromDiskCommand}"/>
 				</MenuItem>
 				<MenuItem Header="_Save" Command="{Binding SaveEventCommand}"/>
+				<MenuItem Header="_Set ISO Path" Command="{Binding SetIsoPathCommand}"/>
 			</MenuItem>
 		</Menu>
 

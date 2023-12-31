@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PersonaEventMsgEditor.Services;
 using PersonaEventMsgEditor.ViewModels;
 using PersonaEventMsgEditor.Views;
+using ReactiveUI;
 using System;
 using System.Text;
 
@@ -19,7 +20,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -30,6 +31,7 @@ public partial class App : Application
 
             var services = new ServiceCollection();
 
+            services.AddSingleton<IConfigService>(x => new ConfigService());
             services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
             services.AddSingleton<ICvmService>(x => new CvmService());
             services.AddSingleton<IPlaybackService>(x => new PlaybackService());

@@ -10,12 +10,9 @@ public class CvmService : ICvmService
     private SubStream? _cvmIsoStream;
     private CDReader? _cvm;
 
-    public CvmService()
+    public bool IsLoaded()
     {
-        // TODO get the path from some kind of config and do stuff if it's not there
-        // (maybe a pop up or something telling them to set it)
-        // Also just don't do this in the constructor...
-        LoadFromIso(@"E:\Modding\P3F\CEP\Files\iso\P3F.iso", "DATA.CVM");
+        return _cvm != null;
     }
 
     public void LoadFromIso(string isoPath, string cvmPath)

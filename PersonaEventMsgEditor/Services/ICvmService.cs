@@ -10,6 +10,12 @@ namespace PersonaEventMsgEditor.Services;
 public interface ICvmService
 {
     /// <summary>
+    /// Checks whether the CVM is loaded
+    /// </summary>
+    /// <returns>True if the CVM is loaded, false otherwise</returns>
+    public bool IsLoaded();
+
+    /// <summary>
     /// Loads a CVM into the service from an iso
     /// </summary>
     /// <param name="isoPath">A path to the iso file</param>
