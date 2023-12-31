@@ -7,4 +7,12 @@ public partial class PageView : UserControl
     {
         InitializeComponent();
     }
+
+    private void TextBox_GotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+    }
+
+    private void Binding_1(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+    }
 }

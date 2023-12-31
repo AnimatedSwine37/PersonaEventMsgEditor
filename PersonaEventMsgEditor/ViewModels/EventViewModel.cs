@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using ReactiveUI;
 using System.Linq;
 using System;
+using System.Reactive;
 
 namespace PersonaEventMsgEditor.ViewModels;
 public class EventViewModel : ViewModelBase
@@ -41,6 +42,8 @@ public class EventViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _audioPlayer, value);
     }
 
+    public ReactiveCommand<IDialogViewModel,Unit> DialogFocusedCommand { get; }
+
     private MessageScript _messageScript;
     private PMD _pmd;
     private IStorageFile _file;
@@ -54,15 +57,21 @@ public class EventViewModel : ViewModelBase
         _pmd = pmd;
         AudioPlayer = new AudioPlayerViewModel(majorId, minorId);
 
+        DialogFocusedCommand = ReactiveCommand.Create<IDialogViewModel, Unit>(x =>
+        {
+            SelectedDialog = x;
+            return Unit.Default;
+        });
+
         foreach (var dialog in messageScript.Dialogs)
         {
             if (dialog.Kind == DialogKind.Message)
             {
-                Dialogs.Add(new MessageViewModel((MessageDialog)dialog));
+                Dialogs.Add(new MessageViewModel((MessageDialog)dialog, DialogFocusedCommand));
             }
             else 
             {
-                Dialogs.Add(new SelectionViewModel((SelectionDialog)dialog));
+                Dialogs.Add(new SelectionViewModel((SelectionDialog)dialog, DialogFocusedCommand));
             }
         }
 

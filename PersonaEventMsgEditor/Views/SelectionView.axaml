@@ -3,6 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
+			 xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
+			 xmlns:views="clr-namespace:PersonaEventMsgEditor.Views"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PersonaEventMsgEditor.Views.SelectionView"
 			 x:DataType="vm:SelectionViewModel">
@@ -13,7 +16,14 @@
 		<ItemsControl ItemsSource="{Binding Options}">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
-					<TextBox Text="{Binding Text}"/>
+					<TextBox Text="{Binding Text}" x:Name="Text">
+						<i:Interaction.Behaviors>
+							<ia:EventTriggerBehavior EventName="GotFocus" SourceObject="{Binding #Text}">
+								<ia:InvokeCommandAction Command="{Binding $parent[views:SelectionView].((vm:SelectionViewModel)DataContext).GotFocusCommand}" 
+														CommandParameter="{Binding $parent[views:SelectionView].((vm:SelectionViewModel)DataContext)}"/>
+							</ia:EventTriggerBehavior>
+						</i:Interaction.Behaviors>
+					</TextBox>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>

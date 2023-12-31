@@ -13,7 +13,7 @@
 			<Label>Speaker</Label>
 			<TextBox Text="{Binding Speaker}" />
 		</StackPanel>
-		<ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage}"/>
+		<ItemsControl ItemsSource="{Binding Pages}"/>
 	</StackPanel>
 
 </UserControl>

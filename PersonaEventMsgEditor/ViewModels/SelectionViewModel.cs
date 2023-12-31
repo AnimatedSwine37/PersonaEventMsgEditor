@@ -1,6 +1,8 @@
 ﻿using AtlusScriptLibrary.MessageScriptLanguage;
 using PersonaEventMsgEditor.Models.Event;
+using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Reactive;
 
 namespace PersonaEventMsgEditor.ViewModels;
 public class SelectionViewModel : ViewModelBase, IDialogViewModel
@@ -11,8 +13,11 @@ public class SelectionViewModel : ViewModelBase, IDialogViewModel
 
     public string Name => _dialog.Name;
 
-    public SelectionViewModel(SelectionDialog dialog)
+    public ReactiveCommand<IDialogViewModel, Unit> GotFocusCommand { get; }
+
+    public SelectionViewModel(SelectionDialog dialog, ReactiveCommand<IDialogViewModel, Unit> gotFocusCommand)
     {
+        GotFocusCommand = gotFocusCommand;
         _dialog = dialog;
         
         foreach(var option in dialog.Options)

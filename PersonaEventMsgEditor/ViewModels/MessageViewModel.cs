@@ -1,6 +1,7 @@
 ﻿using AtlusScriptLibrary.MessageScriptLanguage;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using static PersonaEventMsgEditor.Models.Event.Bustup;
 
 namespace PersonaEventMsgEditor.ViewModels;
@@ -40,8 +41,11 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
         Speaker = speaker;
     }
 
-    public MessageViewModel(MessageDialog dialog)
+    public ReactiveCommand<IDialogViewModel,Unit> GotFocusCommand { get; }
+
+    public MessageViewModel(MessageDialog dialog, ReactiveCommand<IDialogViewModel,Unit> gotFocusCommand)
     {
+        GotFocusCommand = gotFocusCommand;
         _dialog = dialog;
         _name = dialog.Name;
         _speaker = dialog.Speaker?.ToString();

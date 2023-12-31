@@ -6,6 +6,9 @@ using System.Text;
 using AtlusScriptLibrary.MessageScriptLanguage;
 using System.Linq;
 using PersonaEventMsgEditor.Models.Event;
+using Avalonia.Input;
+using System.Reactive;
+using System;
 
 namespace PersonaEventMsgEditor.ViewModels;
 public class PageViewModel : ViewModelBase

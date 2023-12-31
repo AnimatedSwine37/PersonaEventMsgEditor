@@ -21,10 +21,14 @@
 		<!--Message Editor-->
 		<Border Background="Gray" CornerRadius="20" Margin="40"
 				 Grid.Column="1">
-			<StackPanel>
-				<Label Content="{Binding Name}" FontWeight="Bold" FontSize="18" Margin="20 0 0 0"/>
-				<ListBox ItemsSource="{Binding Dialogs}" SelectedItem="{Binding SelectedDialog}"/>
-			</StackPanel>
+			<DockPanel>
+				<Label Content="{Binding Name}" FontWeight="Bold" FontSize="18" 
+					   Margin="20 0 0 0" DockPanel.Dock="Top"/>
+				<ScrollViewer>
+					<ItemsControl ItemsSource="{Binding Dialogs}"
+								  DockPanel.Dock="Top"/>
+				</ScrollViewer>
+			</DockPanel>
 		</Border>
 	</Grid>
 

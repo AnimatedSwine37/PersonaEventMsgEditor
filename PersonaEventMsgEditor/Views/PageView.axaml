@@ -3,6 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:PersonaEventMsgEditor.ViewModels"
+			 xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:ia="using:Avalonia.Xaml.Interactions.Core"
+			 xmlns:views="clr-namespace:PersonaEventMsgEditor.Views"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PersonaEventMsgEditor.Views.PageView"
 			 x:DataType="vm:PageViewModel">
@@ -23,7 +26,18 @@
 			<TextBlock>VoiceLine</TextBlock>
 			<NumericUpDown Value="{Binding VoiceId}"/>
 		</StackPanel>
-		<TextBox Text="{Binding Text}" AcceptsReturn="True"/>
+		<TextBox Text="{Binding Text}" AcceptsReturn="True" x:Name="Text">
+			<i:Interaction.Behaviors>
+				<ia:EventTriggerBehavior EventName="GotFocus" SourceObject="{Binding #Text}">
+					<ia:InvokeCommandAction Command="{Binding $parent[views:MessageView].((vm:MessageViewModel)DataContext).GotFocusCommand}"
+											CommandParameter="{Binding $parent[views:MessageView].((vm:MessageViewModel)DataContext)}"/>
+					<ia:ChangePropertyAction TargetObject="{Binding $parent[views:MessageView].((vm:MessageViewModel)DataContext)}"
+											 PropertyName="SelectedPage"
+											 Value="{Binding}"/>
+
+				</ia:EventTriggerBehavior>
+			</i:Interaction.Behaviors>	
+		</TextBox>
 	</StackPanel>
 
 </UserControl>
