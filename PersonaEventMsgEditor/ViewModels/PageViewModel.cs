@@ -49,6 +49,11 @@ public class PageViewModel : ViewModelBase
         _dialog = dialog;
         _bustup = GetBustup();
         _text = Message.GetText(dialog.Tokens);
+        
+        // Remove extra new line at the end of vanilla messages (will be reinserted when saving)
+        if (_text.EndsWith('\n'))
+            _text = _text.Substring(0, _text.Length - 1);
+        
         VoiceId = GetVoiceId();
     }
     private int? GetVoiceId()
