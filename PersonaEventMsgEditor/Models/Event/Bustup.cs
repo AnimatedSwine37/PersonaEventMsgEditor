@@ -4,6 +4,7 @@ using Avalonia.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using PersonaEventMsgEditor.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,7 +17,25 @@ public class Bustup
     private static Dictionary<BustupCharacter, List<int>> _cachedOutfits = new();
     private static Dictionary<(BustupCharacter character, int outfit), List<int>> _cachedEmotions = new();
     public static BustupCharacter[] Characters => Enum.GetValues<BustupCharacter>();
+    private static ConcurrentDictionary<(BustupCharacter character, int outfit, int emotion), Bustup> _bustups = new();
+    private static string _lock = "dummy :)";
 
+    public BustupCharacter Character { get; }
+    public int Outfit { get; }
+    public int Emotion { get; }
+    private Bitmap? _bitmap;
+
+    private Bustup(BustupCharacter character, int outfit, int emotion)
+    {
+        Character = character;
+        Outfit = outfit;
+        Emotion = emotion;
+    }
+
+    public static Bustup GetBustup(BustupCharacter character, int outfit, int emotion)
+    {
+        return _bustups.GetOrAdd((character, outfit, emotion), new Bustup(character, outfit, emotion));
+    }
 
     public static List<int> GetValidEmotions(BustupCharacter character, int outfit)
     {
@@ -76,44 +95,53 @@ public class Bustup
         return _cachedOutfits[character];
     }
 
-    public static Bitmap? LoadImage(BustupCharacter character, int outfit, int emotion)
+    public Bitmap? LoadImage()
     {
-        if (character == BustupCharacter.None) return null;
+        if (Character == BustupCharacter.None) return null;
 
-        // TODO make this async somehow
-        var bustupBinName = $@"I_B_{(int)character:D2}{outfit:X}{emotion:X}.BIN";
-        var bustupTmxName = $"i_bust_{(int)character:D2}_{outfit:x}{emotion:x}.tmx";
-
-        var cvmService = App.Current?.Services?.GetService<ICvmService>();
-        if (cvmService == null)
-            throw new NotInitializedException("The CVM service hasn't been initialised, report this!");
-
-        if (cvmService.GetFiles(@"\BUSTUP", $"*{bustupBinName}*").Length == 0)
+        lock (this)
         {
-            // Try alternative name only used by some bustups :(
-            bustupBinName = $@"I_B_{(int)character:D2}{outfit:X}{emotion:X}A.BIN";
-            if (cvmService.GetFiles(@"\BUSTUP", $"*{bustupBinName}*").Length == 0)
+            if (_bitmap != null) return _bitmap;
+
+            // Only allow one bustup to be loaded at a time as they're all loaded from the same base stream
+            lock (_lock)
             {
-                return null;
+                var bustupBinName = $@"I_B_{(int)Character:D2}{Outfit:X}{Emotion:X}.BIN";
+                var bustupTmxName = $"i_bust_{(int)Character:D2}_{Outfit:x}{Emotion:x}.tmx";
+
+                var cvmService = App.Current?.Services?.GetService<ICvmService>();
+                if (cvmService == null)
+                    throw new NotInitializedException("The CVM service hasn't been initialised, report this!");
+
+                if (cvmService.GetFiles(@"\BUSTUP", $"*{bustupBinName}*").Length == 0)
+                {
+                    // Try alternative name only used by some bustups :(
+                    bustupBinName = $@"I_B_{(int)Character:D2}{Outfit:X}{Emotion:X}A.BIN";
+                    if (cvmService.GetFiles(@"\BUSTUP", $"*{bustupBinName}*").Length == 0)
+                    {
+                        return null;
+                    }
+                    bustupTmxName = $"i_bust_{(int)Character:D2}_{Outfit:x}{Emotion:x}a.tmx";
+                }
+
+                var bustupBin = cvmService.GetFile(@$"BUSTUP\{bustupBinName}");
+                if (!PAKFileSystem.TryOpen(bustupBin, true, out var bustupPak))
+                {
+                    return null;
+                }
+
+                var bustupTmxStream = bustupPak.OpenFile(bustupTmxName, FileAccess.Read);
+                var bustupTmx = TmxFile.Load(bustupTmxStream);
+                var tmxBitmap = bustupTmx.GetBitmap();
+
+                var memory = new MemoryStream();
+                tmxBitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                memory.Position = 0;
+
+                _bitmap = Bitmap.DecodeToWidth(memory, 512);
+                return _bitmap;
             }
-            bustupTmxName = $"i_bust_{(int)character:D2}_{outfit:x}{emotion:x}a.tmx";
         }
-
-        var bustupBin = cvmService.GetFile(@$"BUSTUP\{bustupBinName}");
-        if (!PAKFileSystem.TryOpen(bustupBin, true, out var bustupPak))
-        {
-            return null;
-        }
-
-        var bustupTmxStream = bustupPak.OpenFile(bustupTmxName, FileAccess.Read);
-        var bustupTmx = TmxFile.Load(bustupTmxStream);
-        var tmxBitmap = bustupTmx.GetBitmap();
-
-        var memory = new MemoryStream();
-        tmxBitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-        memory.Position = 0;
-
-        return Bitmap.DecodeToWidth(memory, 512);
     }
 
     public enum BustupCharacter

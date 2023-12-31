@@ -82,7 +82,9 @@ public class BustupViewModel : ViewModelBase
                     Emotion = emotions.First();
             });
 
-        this.WhenAnyValue(x => x.Character, x => x.Outfit, x => x.Emotion, LoadImage)
+        this.WhenAnyValue(x => x.Character, x => x.Outfit, x => x.Emotion)
+            .ObserveOn(RxApp.TaskpoolScheduler)
+            .Select((x) => GetBustup(x.Item1,x.Item2,x.Item3).LoadImage())
             .ToProperty(this, x => x.Image, out _image);
 
         this.WhenAnyValue(x => x.Character)

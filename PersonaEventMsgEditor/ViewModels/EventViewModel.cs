@@ -86,8 +86,6 @@ public class EventViewModel : ViewModelBase
 
         this.WhenAnyValue(x => x.SelectedMessage.VoiceIndex)
             .Subscribe(x => { AudioPlayer.AdxIndex = x; });
-
-        RxApp.MainThreadScheduler.Schedule(LoadBustups);
     }
 
     // Gets the first message before the specified dialog 
@@ -103,15 +101,6 @@ public class EventViewModel : ViewModelBase
                 return (MessageViewModel)dialogs[i];
         }
         return null;
-    }
-
-    private async void LoadBustups()
-    {
-        foreach (var message in Dialogs.ToList())
-        {
-            // TODO add this back when I've actually got them loading asynchronously in some way
-            //await message.LoadBustupAsync();
-        }
     }
 
     public static async Task<EventViewModel> FromFileAsync(IStorageFile file)
