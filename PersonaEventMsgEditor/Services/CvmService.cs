@@ -1,4 +1,5 @@
-﻿using DiscUtils.Iso9660;
+﻿using Avalonia.Platform.Storage;
+using DiscUtils.Iso9660;
 using DiscUtils.Streams;
 using System.IO;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ public class CvmService : ICvmService
         return _cvm != null;
     }
 
-    public void LoadFromIso(string isoPath, string cvmPath)
+    public async void LoadFromIso(IStorageFile file, string cvmPath)
     {
         if (_isoStream != null)
         {
@@ -24,8 +25,7 @@ public class CvmService : ICvmService
             _isoStream.Close();
         }
 
-
-        _isoStream = File.Open(isoPath, FileMode.Open);
+        _isoStream = await file.OpenReadAsync();
         CDReader cd = new CDReader(_isoStream, true);
         _cvmStream = cd.OpenFile(cvmPath, FileMode.Open);
         // Move past the CVM header to the ISO file (TODO instead of just going by 0x1800 actually read the header and work out length)

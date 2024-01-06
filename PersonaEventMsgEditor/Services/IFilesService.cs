@@ -7,4 +7,5 @@ public interface IFilesService
 {
     public Task<IStorageFile?> OpenFileAsync(string title, FilePickerFileType[] filter);
     public Task<IStorageFile?> SaveFileAsync(string title);
+    public Task<IStorageBookmarkFile?> OpenFileBookmark(string bookmark);
 }

@@ -32,4 +32,9 @@ public class FilesService : IFilesService
             Title = title
         });
     }
+
+    public async Task<IStorageBookmarkFile?> OpenFileBookmark(string bookmark)
+    {
+        return await _target.StorageProvider.OpenFileBookmarkAsync(bookmark);
+    }
 }

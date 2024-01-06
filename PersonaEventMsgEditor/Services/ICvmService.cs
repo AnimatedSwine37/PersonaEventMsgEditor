@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Avalonia.Platform.Storage;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace PersonaEventMsgEditor.Services;
@@ -23,7 +24,7 @@ public interface ICvmService
     /// <remarks>
     /// When getting files from the <see cref="ICvmService"/> they will be loaded from the CVM loaded by this
     /// </remarks>
-    public void LoadFromIso(string isoPath, string cvmPath);
+    public void LoadFromIso(IStorageFile file, string cvmPath);
 
     /// <summary>
     /// Recursively gets all files from the cvm that match a pattern

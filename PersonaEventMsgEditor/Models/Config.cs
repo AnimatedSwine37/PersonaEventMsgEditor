@@ -1,5 +1,5 @@
 ﻿namespace PersonaEventMsgEditor.Models;
 public class Config
 {
-    public string P3FIsoPath { get; set; }
+    public string P3FIso { get; set; }
 }

@@ -37,11 +37,11 @@ public class MainViewModel : ViewModelBase
     {
         var configService = App.Current?.Services?.GetService<IConfigService>();
         if(configService == null) throw new NullReferenceException("Missing Config Service instance");
-        if (configService?.Config.P3FIsoPath == null)
+        if (configService?.Config.P3FIso == null)
         {
             // TODO add a message thing telling them they need to choose an iso
             await SelectIso();
-            if (configService?.Config.P3FIsoPath == null) return;
+            if (configService?.Config.P3FIso == null) return;
         }
 
         var filesService = App.Current?.Services?.GetService<IFilesService>();
@@ -54,7 +54,11 @@ public class MainViewModel : ViewModelBase
         if(cvmService == null) throw new NullReferenceException($"Missing CVM Service instance.");
 
         if (!cvmService.IsLoaded())
-            cvmService.LoadFromIso(configService.Config.P3FIsoPath, "DATA.CVM");
+        {
+            var iso = await filesService.OpenFileBookmark(configService.Config.P3FIso);
+            if (iso is null) throw new NullReferenceException("Unable to load bookmark for iso file");
+            cvmService.LoadFromIso(iso, "DATA.CVM");
+        }
 
         Event = await EventViewModel.FromFileAsync(file);
     }
@@ -74,12 +78,14 @@ public class MainViewModel : ViewModelBase
 
         var configService = App.Current?.Services?.GetService<IConfigService>();
         if (configService is null) throw new NullReferenceException("Missing Config Service insatnce.");
-        configService.Config.P3FIsoPath = file.Path.AbsolutePath;
+        var bookmark = await file.SaveBookmarkAsync();
+        if(bookmark is null) throw new NullReferenceException("Unable to make bookmark for file");
+        configService.Config.P3FIso = bookmark;
         await configService.Save();
 
         var cvmService = App.Current?.Services?.GetService<ICvmService>();
         if (cvmService is null) throw new NullReferenceException("Missing CVM Service instance.");
-        cvmService.LoadFromIso(file.Path.AbsolutePath, "DATA.CVM");
+        cvmService.LoadFromIso(file, "DATA.CVM");
     }
 
     private static FilePickerFileType IsoFile { get; } = new("ISO File")
