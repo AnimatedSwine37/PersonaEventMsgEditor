@@ -1,4 +1,8 @@
 ﻿using AtlusScriptLibrary.MessageScriptLanguage;
+using LibVLCSharp.Shared;
+using MoreLinq;
+using PersonaEventMsgEditor.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -117,5 +121,34 @@ public class Message
         var args = string.Join(' ', token.Arguments);
         if (token.Arguments.Count > 0) args = " " + args;
         return $"[f {token.FunctionTableIndex} {token.FunctionIndex}{args}]";
+    }
+
+    /// <summary>
+    /// Gets the speaker from a list of tokens and removes it and the relevant tags from said list
+    /// </summary>
+    /// <param name="tokens">A list of tokens</param>
+    /// <returns>The name of the speaker if it is set with the tokens, null otherwise</returns>
+    public static string? GetAndRemoveSpeaker(List<IToken> tokens)
+    {
+        for(int i = 0; i < tokens.Count; i++)
+        {
+            if (tokens[i].Kind != TokenKind.Function) continue;
+            var func = (FunctionToken)tokens[i];
+            if (func.FunctionTableIndex != 1 || func.FunctionIndex != 15) continue;
+
+            // Found the speaker function
+            // Expected format is [speaker]Some Text[n]
+            tokens.RemoveAt(i);
+            if (tokens[i].Kind != TokenKind.String) throw new Exception($"Expected a string after [speaker], got {tokens[i]}");
+            
+            var speaker = ((StringToken)tokens[i]).Value;
+            tokens.RemoveAt(i);
+            
+            if (tokens[i].Kind != TokenKind.NewLine) throw new Exception($"Expected a newline after speaker name, got {tokens[i]}");
+            tokens.RemoveAt(i);
+            
+            return speaker;
+        }
+        return null;
     }
 }

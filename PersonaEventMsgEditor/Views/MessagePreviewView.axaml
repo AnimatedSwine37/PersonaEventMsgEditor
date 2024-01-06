@@ -28,7 +28,7 @@
 			Margin="14,0,14,7"/>
 
 		<TextBlock x:Name="Speaker"
-		   Text="{Binding Speaker}"
+		   Text="{Binding SelectedPage.Speaker}"
 		   FontFamily="{StaticResource P3F-Font}"
 		   FontSize="15"
 		   FontWeight="Bold"

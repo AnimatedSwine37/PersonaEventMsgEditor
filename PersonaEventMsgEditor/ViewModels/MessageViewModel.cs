@@ -14,13 +14,6 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
         set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 
-    private string? _speaker;
-    public string? Speaker
-    {
-        get => _speaker;
-        set => this.RaiseAndSetIfChanged(ref _speaker, value);
-    }
-
     public ObservableCollection<PageViewModel> Pages { get; } = new();
 
     private PageViewModel? _selectedPage;
@@ -35,10 +28,9 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
     private MessageDialog _dialog;
 
     // Just for the design time use!
-    internal MessageViewModel(string name, string speaker)
+    internal MessageViewModel(string name)
     {
         Name = name;
-        Speaker = speaker;
     }
 
     public ReactiveCommand<IDialogViewModel,Unit> GotFocusCommand { get; }
@@ -48,12 +40,17 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
         GotFocusCommand = gotFocusCommand;
         _dialog = dialog;
         _name = dialog.Name;
-        _speaker = dialog.Speaker?.ToString();
+        var lastSpeaker = dialog.Speaker?.ToString();
 
         BustupViewModel? bustup = null;
         foreach (var page in dialog.Pages)
         {
-            var pageVm = new PageViewModel(page);
+            var pageVm = new PageViewModel(page, lastSpeaker);
+
+            // Propogate speakers overriden by the page's message
+            if(lastSpeaker != pageVm.Speaker)
+                lastSpeaker = pageVm.Speaker;
+
             Pages.Add(pageVm);
             // Propogate bustup between pages (if not explicitly set)
             if (pageVm.Bustup.Exists)
@@ -75,12 +72,13 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
     /// </summary>
     public void Save()
     {
-        if(!string.IsNullOrEmpty(Speaker))
-            _dialog.Speaker = new NamedSpeaker(Speaker);
+        var lastSpeaker = Pages[0].Speaker;
+        if (!string.IsNullOrEmpty(lastSpeaker))
+            _dialog.Speaker = new NamedSpeaker(lastSpeaker);
         
         foreach (var page in Pages)
         {
-            page.Save();
+            page.Save(lastSpeaker);
         }
     }
 
@@ -89,10 +87,10 @@ public class MessageViewModel : ViewModelBase, IDialogViewModel
 
 public class DesignMessageViewModel : MessageViewModel
 {
-    public DesignMessageViewModel() : base("Test MSG", "Yukari")
+    public DesignMessageViewModel() : base("Test MSG")
     {
         var bustup = new BustupViewModel(BustupCharacter.Yukari, 1, 1, BustupPosition.Right, new(), new());
-        Pages.Add(new PageViewModel("This is a test message\nIt goes over two lines", bustup, null));
+        Pages.Add(new PageViewModel("This is a test message\nIt goes over two lines", "Yukari", bustup, null));
         SelectedPage = Pages[0];
     }
 }

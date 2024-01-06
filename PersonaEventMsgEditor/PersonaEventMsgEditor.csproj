@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.6" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.6" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.6" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -27,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SukiUI\SukiUI\SukiUI.csproj" />
     <ProjectReference Include="..\Submodules\Amicitia\Source\AmicitiaLibrary\AmicitiaLibrary.csproj" />
     <ProjectReference Include="..\Submodules\Atlus-Script-Tools\Source\AtlusScriptLibrary\AtlusScriptLibrary.csproj" />
     <ProjectReference Include="..\Submodules\AtlusFileSystemLibrary\Source\AtlusFileSystemLibrary\AtlusFileSystemLibrary.csproj" />

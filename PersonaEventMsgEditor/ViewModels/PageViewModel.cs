@@ -20,6 +20,13 @@ public class PageViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _text, value);
     }
 
+    private string? _speaker;
+    public string? Speaker
+    {
+        get => _speaker;
+        set => this.RaiseAndSetIfChanged(ref _speaker, value);
+    }
+
     private BustupViewModel _bustup;
     public BustupViewModel Bustup
     {
@@ -37,16 +44,23 @@ public class PageViewModel : ViewModelBase
     private TokenText _dialog;
 
     // Just for design time use!
-    internal PageViewModel(string text, BustupViewModel bustup, int? voiceId)
+    internal PageViewModel(string text, string speaker, BustupViewModel bustup, int? voiceId)
     {
         Text = text;
         Bustup = bustup;
         VoiceId = voiceId;
+        Speaker = speaker;
     }
 
-    public PageViewModel(TokenText dialog)
+    public PageViewModel(TokenText dialog, string? lastSpeaker)
     {
         _dialog = dialog;
+
+        // The speaker can be overriden for this (and future pages) with the [speaker] function
+        _speaker = Message.GetAndRemoveSpeaker(dialog.Tokens);
+        if(_speaker == null)
+            _speaker = lastSpeaker;
+        
         _bustup = GetBustup();
         _text = Message.GetText(dialog.Tokens);
         
@@ -91,7 +105,8 @@ public class PageViewModel : ViewModelBase
     /// <summary>
     /// Saves the message's changes to its underlying <see cref="TokenText"/>
     /// </summary>
-    public void Save()
+    /// <param name="lastSpeaker">The speaker the last page had so it can be overriden if necessary</param>
+    public void Save(string? lastSpeaker)
     {
         var tokens = _dialog.Tokens;
         tokens.Clear();
@@ -110,6 +125,14 @@ public class PageViewModel : ViewModelBase
         if (VoiceId != null)
         {
             tokens.Add(new FunctionToken(2, 8, (ushort)VoiceId));
+        }
+
+        // Override speaker
+        if(string.Compare(lastSpeaker, Speaker) != 0)
+        {
+            tokens.Add(new FunctionToken(1, 15));
+            tokens.Add(new StringToken(Speaker));
+            tokens.Add(new NewLineToken());
         }
 
         // Add the user's actual text

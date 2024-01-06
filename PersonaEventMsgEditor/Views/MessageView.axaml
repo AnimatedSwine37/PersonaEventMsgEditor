@@ -9,10 +9,6 @@
 
 	<StackPanel>
 		<Label Content="{Binding Name}" FontWeight="Bold" FontSize="16"/>
-		<StackPanel Orientation="Horizontal">
-			<Label>Speaker</Label>
-			<TextBox Text="{Binding Speaker}" />
-		</StackPanel>
 		<ItemsControl ItemsSource="{Binding Pages}"/>
 	</StackPanel>
 

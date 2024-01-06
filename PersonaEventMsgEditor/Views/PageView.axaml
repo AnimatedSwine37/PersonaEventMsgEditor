@@ -12,6 +12,9 @@
 
 	<StackPanel>
 		<StackPanel Orientation="Horizontal">
+			<Label>Speaker</Label>
+			<TextBox Text="{Binding Speaker}" />
+
 			<TextBlock>Character</TextBlock>
 			<ComboBox ItemsSource="{Binding Bustup.Characters}" SelectedItem="{Binding Bustup.Character}"/>
 
