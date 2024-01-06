@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace PersonaEventMsgEditor.Services;
 public class CvmService : ICvmService
 {
+    private Stream? _isoStream;
     private Stream? _cvmStream;
     private SubStream? _cvmIsoStream;
     private CDReader? _cvm;
@@ -17,8 +18,15 @@ public class CvmService : ICvmService
 
     public void LoadFromIso(string isoPath, string cvmPath)
     {
-        FileStream isoStream = File.Open(isoPath, FileMode.Open);
-        CDReader cd = new CDReader(isoStream, true);
+        if (_isoStream != null)
+        {
+            _cvm = null;
+            _isoStream.Close();
+        }
+
+
+        _isoStream = File.Open(isoPath, FileMode.Open);
+        CDReader cd = new CDReader(_isoStream, true);
         _cvmStream = cd.OpenFile(cvmPath, FileMode.Open);
         // Move past the CVM header to the ISO file (TODO instead of just going by 0x1800 actually read the header and work out length)
         _cvmIsoStream = new SubStream(_cvmStream, 0x1800, _cvmStream.Length - 0x1800);
